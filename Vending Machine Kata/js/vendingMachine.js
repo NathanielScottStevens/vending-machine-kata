@@ -1,40 +1,87 @@
-﻿
+﻿var VendingMachine = function() {
+	
+	var coins;
+	
+	function init(coinData){
+		validateCoinData(coinData);
+		coins = parseCoinData(coinData);
+		isThereCoinWeightOverlap();
+		isThereCoinSizeOverlap();
+	}
 
-function CoinInfo(weightInGrams, sizeInInches, weightMarginOfError, sizeMarginOfError) {
-    this.weightInGrams = weightInGrams;
-    this.sizeInInches = sizeInInches;
-    this.weightMarginOfError = weightMarginOfError;
-    this.sizeMarginOfError = sizeMarginOfError;
+	function CoinInfo(coinDatum) {
+		this.name = coinDatum.name;
+		this.weight = coinDatum.weight;
+		this.size = coinDatum.size;
+		this.value = coinDatum.value;
+		this.weightMarginOfError = coinDatum.weightMarginOfError;
+		this.sizeMarginOfError = coinDatum.sizeMarginOfError;
+		
+		var weightLowerBound = weight - weightMarginOfError;
+		var weightUpperBound = weight + weightMarginOfError;
+		var sizeLowerBound = size - sizeMarginOfError;
+		var sizeUpperBound = size + sizeMarginOfError;
 
-    this.isValid = function (weight, size) {
-        var weightLowerBound = weightInGrams - weightMarginOfError;
-        var weightUpperBound = weightInGrams + weightMarginOfError;
+		this.isValid = function (weight, size) {
+			var isWeightValid = weightLowerBound <= weight && weight <= weightUpperBound;
+			var isSizeValid = sizeLowerBound <= size && size <= sizeUpperBound;
 
-        var sizeLowerBound = sizeInInches - sizeMarginOfError;
-        var sizeUpperBound = sizeInInches + sizeMarginOfError;
+			return isWeightValid && isSizeValid;
+		}
+	}
+	
+	function validateCoinData(coinData){
+		if (!coinData.isArray)
+			throw new TypeError("coinData must be an array.")
+		
+		// We should probably validate here that each object in the array conforms
+		// to the CoinInfo requirements. However, that ultimately depends on client
+		// access to the json object.
+	}
+	
+	function parseCoinData(coinData){
+		var coins = new Array(coinData.length);
+		coins.length = coinData.length;
+		
+		for (var i = 0; i < coins.length; i++){
+			coins[i] = new CoinInfo(coinData[i]);
+		}
+		
+		return coins;
+	}	
 
-        var isWeightValid = weightLowerBound <= weight && weight <= weightUpperBound;
-        var isSizeValid = sizeLowerBound <= size && size <= sizeUpperBound;
+	function isThereCoinWeightOverlap(){
+		for (var i = 0; i < coins.length; i++){
+			for (var j = i + 1; j < coins.length; j++){
+				if (coins[i].weightUpperBound >= coins[j].weightLowerBound 
+				|| coins[i].weightLowerBound <= coins[j].weightUpperBound)
+					throw new Error(coins[i].name + " and " + coins[j].name + " have weight ranges that overlap. Please adjust their margin's of error.");
+			}
+		}
+	}
+	
+	function isThereCoinSizeOverlap(){
+		for (var i = 0; i < coins.length; i++){
+			for (var j = i + 1; j < coins.length; j++){
+				if (coins[i].sizeUpperBound >= coins[j].sizeLowerBound)
+					return false;
+				if (coins[i].sizeLowerBound <= coins[j].sizeUpperBound)
+					return false;
+			}
+		}
+	}
 
-        return isWeightValid && isSizeValid;
-    }
-}
+	function determineCoin(weight, size) {
+		if (nickel.isValid(weight, size))
+			return "nickel";
+		else if (dime.isValid(weight, size))
+			return "dime";
+		else if (quarter.isValid(weight, size))
+			return "quarter";
+		else
+			return "other";
+	}
 
-var weightMarginOfError = 0.3;
-var sizeMarginOfError = 0.05;
+	return {init:init}
+}();
 
-// https://www.usmint.gov/about_the_mint/?action=coin_specifications
-var nickel = new CoinInfo(5, 0.835, weightMarginOfError, sizeMarginOfError);
-var dime = new CoinInfo(2.268, 0.705, weightMarginOfError, sizeMarginOfError);
-var quarter = new CoinInfo(5.67, 0.955, weightMarginOfError, sizeMarginOfError);
-
-function determineCoin(weightInGrams, sizeInInches) {
-    if (nickel.isValid(weightInGrams, sizeInInches))
-        return "nickel";
-    else if (dime.isValid(weightInGrams, sizeInInches))
-        return "dime";
-    else if (quarter.isValid(weightInGrams, sizeInInches))
-        return "quarter";
-    else
-        return "other";
-}

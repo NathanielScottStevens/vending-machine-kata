@@ -1,23 +1,63 @@
-﻿module("determineCoin");
+﻿function getTestCoinData()
+{
+	return [
+	{
+		"name": "nickel",
+		"weight": "5",
+		"size": "21.21",
+		"value": "0.05",
+		"weightMarginOfError": "0.3",
+		"sizeMarginOfError": "1"
+	},	
+	{
+		"name": "dime",
+		"weight": "2.268",
+		"size": "17.91",
+		"value": "0.10", 
+		"weightMarginOfError": "0.3",
+		"sizeMarginOfError": "1"
+	}];	
+}
 
-QUnit.test("returns nickel", function(assert) {
-    assert.equal(determineCoin(nickel.weightInGrams, nickel.sizeInInches), "nickel");
+module("coinData Validation");
+
+QUnit.test("Throws TypeError when undefined", function(assert){
+	assert.throws(
+		function() { VendingMachine.init() },
+		TypeError
+	);
 })
 
-QUnit.test("returns dime", function(assert) {
-    assert.equal(determineCoin(dime.weightInGrams, dime.sizeInInches), "dime");
+QUnit.test("Throws TypeError when not an array", function(assert){
+	assert.throws(
+		function() { VendingMachine.init() },
+		TypeError
+	);
 })
 
-QUnit.test("returns quarter", function(assert) {
-    assert.equal(determineCoin(quarter.weightInGrams, quarter.sizeInInches), "quarter");
+
+module("Overlapping Weight");
+
+QUnit.test("Throws Error when weight ranges overlap", function(assert){
+	 var invalidCoinData = getTestCoinData();
+	 invalidCoinData[0].weightMarginOfError = 0;
+	 invalidCoinData[1].weightMarginOfError = 0;
+	
+	assert.throws(
+		function() { VendingMachine.init(invalidCoinData) },
+		Error
+		);
 })
 
-QUnit.test("no overlap between dime and nickel", function (assert) {
-    assert.equal(determineCoin(dime.weightInGrams + weightMarginOfError, dime.sizeInInches + sizeMarginOfError), "dime");
-    assert.equal(determineCoin(nickel.weightInGrams - weightMarginOfError, nickel.sizeInInches + sizeMarginOfError), "nickel");
-})
+module("Overlapping Size");
 
-QUnit.test("no overlap between nickel and quarter", function (assert) {
-    assert.equal(determineCoin(nickel.weightInGrams + weightMarginOfError, nickel.sizeInInches + sizeMarginOfError), "nickel");
-    assert.equal(determineCoin(quarter.weightInGrams - weightMarginOfError, quarter.sizeInInches + sizeMarginOfError), "quarter");
+QUnit.test("Throws Error when weight ranges overlap", function(assert){
+	 var invalidCoinData = getTestCoinData();
+	 invalidCoinData[0].sizeMarginOfError = 0;
+	 invalidCoinData[1].sizeMarginOfError = 0;
+	
+	assert.throws(
+		function() { VendingMachine.init(invalidCoinData) },
+		Error
+		);
 })
