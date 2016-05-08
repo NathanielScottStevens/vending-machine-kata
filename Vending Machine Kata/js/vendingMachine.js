@@ -1,87 +1,72 @@
 ﻿var VendingMachine = function() {
 	
-	var coins;
-	
-	function init(coinData){
-		validateCoinData(coinData);
-		coins = parseCoinData(coinData);
-		isThereCoinWeightOverlap();
-		isThereCoinSizeOverlap();
-	}
+	var screenDisplay;
+	var totalAmountInserted;
 
-	function CoinInfo(coinDatum) {
-		this.name = coinDatum.name;
-		this.weight = coinDatum.weight;
-		this.size = coinDatum.size;
-		this.value = coinDatum.value;
-		this.weightMarginOfError = coinDatum.weightMarginOfError;
-		this.sizeMarginOfError = coinDatum.sizeMarginOfError;
-		
-		var weightLowerBound = weight - weightMarginOfError;
-		var weightUpperBound = weight + weightMarginOfError;
-		var sizeLowerBound = size - sizeMarginOfError;
-		var sizeUpperBound = size + sizeMarginOfError;
+	// The feature request requires both an "INSERT COINS" and "INSERT COIN" message.
+	// I believe this is a typo.
+	var insertCoinMessage = "INSERT COINS";
+	var thankyouMessage = "THANK YOU";
+	var soldOutMessage = "SOLD OUT";
+	var exactChangeMessage = "EXACT CHANGE ONLY";	
+	
+	
+	function getScreenDisplay() {
+		return screenDisplay + " " + totalAmountInserted.toFixed(2);
+	}
+	
+	function getTotalAmountInserted() {
+		return totalAmountInserted.toFixed(2);
+	}
+	
+	/**
+	 *	Coin object.
+	 * @param {number} weight - Weight of the coin in grams.
+	 * @param {number} size - Size of the coin in millimeters.
+	 * @param {number} value - Value of coin in USD.
+	 */
+	function CoinInfo(weight, size, value) {
+		this.weight = weight;
+		this.size = size;
+		this.value = value;
 
 		this.isValid = function (weight, size) {
-			var isWeightValid = weightLowerBound <= weight && weight <= weightUpperBound;
-			var isSizeValid = sizeLowerBound <= size && size <= sizeUpperBound;
+			var isWeightValid = this.weight === weight;
+			var isSizeValid = this.size === size;
 
 			return isWeightValid && isSizeValid;
 		}
 	}
 	
-	function validateCoinData(coinData){
-		if (!coinData.isArray)
-			throw new TypeError("coinData must be an array.")
-		
-		// We should probably validate here that each object in the array conforms
-		// to the CoinInfo requirements. However, that ultimately depends on client
-		// access to the json object.
-	}
+	// https://www.usmint.gov/about_the_mint/?action=coin_specifications
+	var nickel = new CoinInfo(5.000, 21.21, 0.05);
+	var dime = new CoinInfo(2.268, 17.91, 0.10);
+	var quarter = new CoinInfo(5.670, 24.26, 0.25);
 	
-	function parseCoinData(coinData){
-		var coins = new Array(coinData.length);
-		coins.length = coinData.length;
+	function insertCoin(coin){
+		var insertedCoin = determineCoin(coin.weight, coin.size);
 		
-		for (var i = 0; i < coins.length; i++){
-			coins[i] = new CoinInfo(coinData[i]);
-		}
-		
-		return coins;
-	}	
-
-	function isThereCoinWeightOverlap(){
-		for (var i = 0; i < coins.length; i++){
-			for (var j = i + 1; j < coins.length; j++){
-				if (coins[i].weightUpperBound >= coins[j].weightLowerBound 
-				|| coins[i].weightLowerBound <= coins[j].weightUpperBound)
-					throw new Error(coins[i].name + " and " + coins[j].name + " have weight ranges that overlap. Please adjust their margin's of error.");
-			}
-		}
-	}
-	
-	function isThereCoinSizeOverlap(){
-		for (var i = 0; i < coins.length; i++){
-			for (var j = i + 1; j < coins.length; j++){
-				if (coins[i].sizeUpperBound >= coins[j].sizeLowerBound)
-					return false;
-				if (coins[i].sizeLowerBound <= coins[j].sizeUpperBound)
-					return false;
-			}
-		}
+		if (insertedCoin !== null)
+			totalAmountInserted += insertedCoin.value;
 	}
 
 	function determineCoin(weight, size) {
 		if (nickel.isValid(weight, size))
-			return "nickel";
+			return nickel;
 		else if (dime.isValid(weight, size))
-			return "dime";
+			return dime;
 		else if (quarter.isValid(weight, size))
-			return "quarter";
+			return quarter;
 		else
-			return "other";
+			return null;
+	}
+	
+	function init(){
+		screenDisplay = insertCoinMessage;
+		totalAmountInserted = 0;
 	}
 
-	return {init:init}
+	return {init:init, insertCoin:insertCoin, getScreenDisplay:getScreenDisplay, 
+				getTotalAmountInserted:getTotalAmountInserted}
 }();
 
