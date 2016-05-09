@@ -4,32 +4,32 @@
 	dime:    { weight: 2.268, size: 17.91 },
 	quarter: { weight: 5.670, size: 24.26 },
 	
-	chips:   { name: "chips", cost: 0.50 }
+	chips:   { name: 'chips', cost: 0.50 }
 };
 
 function defaultVendingMachineInit() {
 	VendingMachine.init(5, 5, 5, 5, 5, 5);
 }
 
-module("Screen Display")
+module('Screen Display')
 
-QUnit.test("Displays correct message at initializion.", function(assert) {
+QUnit.test('Displays correct message at initializion.', function(assert) {
 	defaultVendingMachineInit();
 	
-	assert.equal(VendingMachine.getScreen(), "INSERT COINS");
+	assert.equal(VendingMachine.getScreen(), 'INSERT COINS');
 });
 
-QUnit.test("Display shows THANK YOU after purchase", function(assert) {
+QUnit.test('Display shows THANK YOU after purchase', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.insertCoin(testObjects.quarter);
 	VendingMachine.insertCoin(testObjects.quarter);
 	VendingMachine.selectProduct(testObjects.chips.name);
 	
-	assert.equal(VendingMachine.getScreen(), "THANK YOU");	
+	assert.equal(VendingMachine.getScreen(), 'THANK YOU');	
 });
 
-QUnit.test("Display shows INSERT COINS after THANK YOU", function(assert) {
+QUnit.test('Display shows INSERT COINS after THANK YOU', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.insertCoin(testObjects.quarter);
@@ -37,57 +37,57 @@ QUnit.test("Display shows INSERT COINS after THANK YOU", function(assert) {
 	VendingMachine.selectProduct(testObjects.chips.name);
 	VendingMachine.getScreen(); // Displays THANK YOU
 	
-	assert.equal(VendingMachine.getScreen(), "INSERT COINS");	
+	assert.equal(VendingMachine.getScreen(), 'INSERT COINS');	
 });
 
-QUnit.test("Displays PRICE and cost upon unsuccesful selection", function(assert) {
+QUnit.test('Displays PRICE and cost upon unsuccesful selection', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.insertCoin(testObjects.quarter);
 	VendingMachine.selectProduct(testObjects.chips.name);
 	
-	assert.equal(VendingMachine.getScreen(), "PRICE $" + testObjects.chips.cost.toFixed(2));
+	assert.equal(VendingMachine.getScreen(), 'PRICE $' + testObjects.chips.cost.toFixed(2));
 	
 });
 
-QUnit.test("Next check of display after unsuccesful selection show INSERT COINS if no money has been entered.", function(assert) {
+QUnit.test('Next check of display after unsuccesful selection show INSERT COINS if no money has been entered.', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.selectProduct(testObjects.chips.name);
 	VendingMachine.getScreen();
 	
-	assert.equal(VendingMachine.getScreen(), "INSERT COINS");
+	assert.equal(VendingMachine.getScreen(), 'INSERT COINS');
 });
 
-QUnit.test("Displays amount entered", function(assert) {
+QUnit.test('Displays amount entered', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.insertCoin(testObjects.nickel);
 	
-	assert.equal(VendingMachine.getScreen(), "$0.05");
+	assert.equal(VendingMachine.getScreen(), '$0.05');
 });
 
-QUnit.test("Displays INSERT COINS after returning coins.", function(assert) {
+QUnit.test('Displays INSERT COINS after returning coins.', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.insertCoin(testObjects.quarter);
 	VendingMachine.insertCoin(testObjects.quarter);
 	VendingMachine.returnCoins();
 	
-	assert.equal(VendingMachine.getScreen(), "INSERT COINS");
+	assert.equal(VendingMachine.getScreen(), 'INSERT COINS');
 });
 
-QUnit.test("Displays SOLD OUT if selection is sold out.", function(assert) {
+QUnit.test('Displays SOLD OUT if selection is sold out.', function(assert) {
 	VendingMachine.init(5, 5, 5, 5, 0, 5); // No chips
 	
 	VendingMachine.insertCoin(testObjects.quarter);
 	VendingMachine.insertCoin(testObjects.quarter);
 	VendingMachine.selectProduct(testObjects.chips.name);
 	
-	assert.equal(VendingMachine.getScreen(), "SOLD OUT");	
+	assert.equal(VendingMachine.getScreen(), 'SOLD OUT');	
 });
 
-QUnit.test("Display shows amount inserted after SOLD OUT", function(assert) {
+QUnit.test('Display shows amount inserted after SOLD OUT', function(assert) {
 	VendingMachine.init(5, 5, 5, 5, 0, 5); // No chips
 	
 	VendingMachine.insertCoin(testObjects.quarter);
@@ -95,63 +95,63 @@ QUnit.test("Display shows amount inserted after SOLD OUT", function(assert) {
 	VendingMachine.selectProduct(testObjects.chips.name);
 	VendingMachine.getScreen(); // Displays SOLD OUT
 	
-	assert.equal(VendingMachine.getScreen(), "$0.50");	
+	assert.equal(VendingMachine.getScreen(), '$0.50');	
 });
 
-QUnit.test("Display EXACT CHANGE ONLY when there is no change.", function(assert) {
+QUnit.test('Display EXACT CHANGE ONLY when there is no change.', function(assert) {
 	VendingMachine.init(0, 0, 0, 5, 5, 5);
 
-	assert.equal(VendingMachine.getScreen(), "EXACT CHANGE ONLY");	
+	assert.equal(VendingMachine.getScreen(), 'EXACT CHANGE ONLY');	
 });
 
-QUnit.test("Display EXACT CHANGE ONLY when there less than 4 nickels and no dimes.", function(assert) {
+QUnit.test('Display EXACT CHANGE ONLY when there less than 4 nickels and no dimes.', function(assert) {
 	VendingMachine.init(3, 0, 5, 5, 5, 5);
 
-	assert.equal(VendingMachine.getScreen(), "EXACT CHANGE ONLY");	
+	assert.equal(VendingMachine.getScreen(), 'EXACT CHANGE ONLY');	
 });
 
-QUnit.test("Display EXACT CHANGE ONLY when there are 2 nickels and 1 dime.", function(assert) {
+QUnit.test('Display EXACT CHANGE ONLY when there are 2 nickels and 1 dime.', function(assert) {
 	VendingMachine.init(3, 0, 5, 5, 5, 5);
 
-	assert.equal(VendingMachine.getScreen(), "EXACT CHANGE ONLY");	
+	assert.equal(VendingMachine.getScreen(), 'EXACT CHANGE ONLY');	
 });
 
 
-module("Insert Coin")
+module('Insert Coin')
 	
-QUnit.test("Accepts nickel.", function(assert) {
+QUnit.test('Accepts nickel.', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.insertCoin(testObjects.nickel);
 	
-	assert.equal(VendingMachine.getScreen(), "$0.05");
+	assert.equal(VendingMachine.getScreen(), '$0.05');
 });
 
-QUnit.test("Accepts dime.", function(assert) {
+QUnit.test('Accepts dime.', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.insertCoin(testObjects.dime);
 	
-	assert.equal(VendingMachine.getScreen(), "$0.10");
+	assert.equal(VendingMachine.getScreen(), '$0.10');
 });
 
-QUnit.test("Accepts quarter.", function(assert) {
+QUnit.test('Accepts quarter.', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.insertCoin(testObjects.quarter);
 	
-	assert.equal(VendingMachine.getScreen(), "$0.25");
+	assert.equal(VendingMachine.getScreen(), '$0.25');
 });
 
-QUnit.test("Rejects penny.", function(assert) {
+QUnit.test('Rejects penny.', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.insertCoin(testObjects.penny);
 	
-	assert.equal(VendingMachine.getScreen(), "INSERT COINS");
+	assert.equal(VendingMachine.getScreen(), 'INSERT COINS');
 });
 
-QUnit.test("Deposits penny in coin return", function(assert) {
+QUnit.test('Deposits penny in coin return', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.insertCoin(testObjects.penny);
@@ -160,19 +160,19 @@ QUnit.test("Deposits penny in coin return", function(assert) {
 });
 
 
-QUnit.test("Accepts multiple coins and sums values.", function(assert) {
+QUnit.test('Accepts multiple coins and sums values.', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.insertCoin(testObjects.nickel);
 	VendingMachine.insertCoin(testObjects.dime)
 	
-	assert.equal(VendingMachine.getScreen(), "$0.15");
+	assert.equal(VendingMachine.getScreen(), '$0.15');
 });
 
 
-module("Select Product");
+module('Select Product');
 
-QUnit.test("Returns correct product.", function(assert) {
+QUnit.test('Returns correct product.', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.insertCoin(testObjects.quarter);
@@ -182,7 +182,7 @@ QUnit.test("Returns correct product.", function(assert) {
 	assert.equal(VendingMachine.takeProduct()[0], testObjects.chips.name);
 });
 
-QUnit.test("Returns nothing if inserted payment is below cost.", function(assert) {
+QUnit.test('Returns nothing if inserted payment is below cost.', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.insertCoin(testObjects.quarter);
@@ -192,7 +192,7 @@ QUnit.test("Returns nothing if inserted payment is below cost.", function(assert
 
 // This fails because of rounding point errors. 
 // Money needs to be stored as integers counting in cents.
-QUnit.test("Returns change after purchase.", function(assert) {
+QUnit.test('Returns change after purchase.', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.insertCoin(testObjects.quarter);
@@ -204,9 +204,9 @@ QUnit.test("Returns change after purchase.", function(assert) {
 });
 
 
-module("Coin Return");
+module('Coin Return');
 
-QUnit.test("Returns coins when requested.", function(assert) {
+QUnit.test('Returns coins when requested.', function(assert) {
 	defaultVendingMachineInit();
 	
 	VendingMachine.insertCoin(testObjects.quarter);

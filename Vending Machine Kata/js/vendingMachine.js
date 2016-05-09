@@ -24,7 +24,7 @@
 	function insertCoin(coin){
 		var insertedCoin = coinInventory.addCoin(coin.weight, coin.size);
 		
-		if (insertedCoin == null){
+		if (insertedCoin === null){
 			coinReturn.push(coin);
 		}
 		else{
@@ -38,13 +38,13 @@
 		if (product !== undefined){
 			lastSelectedProduct = product;
 			
-			if (product.stored == 0){
+			if (product.stored === 0){
 				currentState = getSoldOutState();
 			}
 			else if (product.price > totalAmountInserted){
 				currentState = getProductSelectionFailState(product);
 			}
-			else if (product.stored == 0){
+			else if (product.stored === 0){
 				currentState = getProductSelectionFailState(product);
 			}
 			else {
@@ -88,9 +88,9 @@
 	var insertCoinsState = new State(
 		function() {
 			if (coinInventory.canMakeChange())
-				return "INSERT COINS";
+				return 'INSERT COINS';
 			else
-				return "EXACT CHANGE ONLY";
+				return 'EXACT CHANGE ONLY';
 		}
 	);
 	
@@ -105,7 +105,7 @@
 			function() {
 				if (this.param){
 					this.param = false;
-					return "THANK YOU";
+					return 'THANK YOU';
 				}
 				else{
 					currentState = insertCoinsState;
@@ -124,7 +124,7 @@
 				else
 					currentState = insertCoinsState;
 				
-				return "PRICE " + formatMoney(product.price);
+				return 'PRICE ' + formatMoney(product.price);
 			});
 	}
 	
@@ -133,7 +133,7 @@
 			function() {
 				if (this.param){
 					this.param = false;
-					return "SOLD OUT";
+					return 'SOLD OUT';
 				}
 				else{
 					if (totalAmountInserted > 0)
@@ -204,7 +204,7 @@
 		},
 		
 		removeCoin: function(coin){
-			if (coin.stored != 0){
+			if (coin.stored !== 0){
 				coin.stored--;
 				return true;
 			}
@@ -223,7 +223,7 @@
 				coinReturn.push(this.dime);
 				totalAmountInserted -= 0.10;
 			}
-			else if (totalAmountInserted == 0.05 && this.nickel.stored > 0) {
+			else if (totalAmountInserted === 0.05 && this.nickel.stored > 0) {
 				this.removeCoin(this.nickel);
 				coinReturn.push(this.nickel);
 				totalAmountInserted -= 0.05;
@@ -250,9 +250,9 @@
 	}
 	
 	var productInventory = {
-		cola : new Product("cola", 1.00, 0),
-		chips : new Product("chips", 0.50, 0),
-		candy : new Product("candy", 0.65, 0),
+		cola : new Product('cola', 1.00, 0),
+		chips : new Product('chips', 0.50, 0),
+		candy : new Product('candy', 0.65, 0),
 		
 		init: function(colas, chips, candies){
 			this.cola.stored = colas;
@@ -261,13 +261,13 @@
 		},
 		
 		getProductInfo: function(product){
-			if (product == "cola"){
+			if (product === 'cola'){
 				return this.cola;
 			}
-			else if (product == "chips"){
+			else if (product === 'chips'){
 				return this.chips;
 			}
-			else if (product == "candy"){
+			else if (product === 'candy'){
 				return this.candy;
 			}
 			else {
@@ -276,22 +276,22 @@
 		},
 		
 		removeProduct : function(product){
-			if (product == "cola"){
+			if (product === 'cola'){
 				if (this.cola.stored != 0){
 					this.cola.stored--;
-					return "cola";
+					return 'cola';
 				}
 			}
-			else if (product == "chips"){
+			else if (product === 'chips'){
 				if (this.chips.stored != 0){
 					this.chips.stored--;
-					return "chips";
+					return 'chips';
 				}
 			}
-			else if (product == "candy"){
+			else if (product === 'candy'){
 				if (this.candy.stored != 0){
 					this.candy.stored--;
-					return "candy";
+					return 'candy';
 				}
 			}
 			else{
@@ -303,7 +303,7 @@
 	// Helper Functions
 
 	function formatMoney(amount){
-		return "$" + amount.toFixed(2);
+		return '$' + amount.toFixed(2);
 	}
 	
 	function copyArray(array){
